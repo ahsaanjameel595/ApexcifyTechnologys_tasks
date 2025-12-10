@@ -46,6 +46,71 @@ plt.xlabel('Month')
 plt.ylabel('Sales')
 plt.legend()
 plt.show()
+# airline prediction satisfaction :
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder, StandardScaler
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+
+# Load dataset
+df = pd.read_csv('data/train.csv.zip')
+
+# Drop unnecessary columns
+df = df.drop(columns=['id'])
+
+# Separate numeric and nominal columns
+num_cols = df.select_dtypes(include=['int64','float64']).columns
+nom_cols = df.select_dtypes(include=['object']).columns
+nom_cols = nom_cols.drop('satisfaction')  # remove target from nominal features
+
+# Target column
+ord_cols = ['satisfaction']
+ord_categories = [['satisfied', 'neutral or dissatisfied']]
+
+# Numeric pipeline
+num_pipeline = Pipeline(steps=[
+    ('imputer', SimpleImputer(strategy='median')),
+    ('scaler', StandardScaler())
+])
+
+# Ordinal pipeline (target)
+ord_pipeline = Pipeline(steps=[
+    ('imputer', SimpleImputer(strategy='most_frequent')),
+    ('ordinalEncoder', OrdinalEncoder(categories=ord_categories))
+])
+
+# Nominal pipeline
+nom_pipeline = Pipeline(steps=[
+    ('imputer', SimpleImputer(strategy='most_frequent')),
+    ('onehotencoder', OneHotEncoder(handle_unknown='ignore'))
+])
+
+# Combine pipelines
+transformer = ColumnTransformer(
+    transformers=[
+        ('num', num_pipeline, num_cols),
+        ('ord', ord_pipeline, ord_cols),
+        ('nom', nom_pipeline, nom_cols)
+    ],
+    remainder='passthrough'
+)
+
+# Train-test split
+X_train, X_test, Y_train, Y_test = train_test_split(
+    df.drop(columns=['satisfaction']),
+    df['satisfaction'],
+    test_size=0.2,
+    random_state=42
+)
+
+# Optional: check shapes
+print("X_train:", X_train.shape, "X_test:", X_test.shape)
+print("Y_train:", Y_train.shape, "Y_test:", Y_test.shape)
+
 
 # sales
 
