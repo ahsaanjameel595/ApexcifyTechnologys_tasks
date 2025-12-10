@@ -46,7 +46,12 @@ plt.xlabel('Month')
 plt.ylabel('Sales')
 plt.legend()
 plt.show()
-# airline prediction satisfaction :
+
+
+**airline prediction satisfaction**
+
+
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -112,7 +117,122 @@ print("X_train:", X_train.shape, "X_test:", X_test.shape)
 print("Y_train:", Y_train.shape, "Y_test:", Y_test.shape)
 
 
-# sales
+**titanic dataset**
+
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OrdinalEncoder,OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+df=pd.read_csv('/content/sample_data/titanic_train.csv')
+df.head()
+df.columns
+df.dtypes
+df=df.drop(columns=['Name','Cabin','Ticket','PassengerId'])
+df.head(2)
+df.shape
+df['Embarked'].value_counts()
+X_train,X_test,Y_train,Y_test=train_test_split(df.drop(columns=['Survived']),df['Survived'],test_size=0.2)
+num_cols=['Age','Parch','Fare']
+ord_cols=['Pclass']
+ord_categories=[[1,2,3]]
+nom_cols=['Sex','Embarked']
+
+transformer=ColumnTransformer(
+    transformers=[
+        ('num',SimpleImputer(),num_cols),
+        ('ord',OrdinalEncoder(categories=ord_categories),ord_cols),
+        ('nom',OneHotEncoder(),nom_cols)
+    ],
+    remainder='passthrough'
+)
+transformer
+df.head()
+X_train_encoded=transformer.fit_transform(X_train).shape
+transformer.fit_transform(X_train)
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OrdinalEncoder,OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+
+df=pd.read_csv('/content/sample_data/titanic_train.csv')
+df
+df.isnull().sum()
+df=df.drop(columns=['Name','Cabin','PassengerId','Ticket'])
+df.head()
+num_cols=['Age','SibSp','Fare','Parch']
+Ord_cols=['Pclass']
+Ord_categories=[[1,2,3]]
+nom_cols=['Sex','Embarked']
+transformer=ColumnTransformer(
+    transformers=[
+        ('num',SimpleImputer(),num_cols),
+        ('ord',OrdinalEncoder(categories=Ord_categories),Ord_cols),
+        ('nom',OneHotEncoder(),nom_cols)
+    ],
+    remainder='passthrough'
+)
+X_train,X_test,Y_train,Y_test=train_test_split(df.drop(columns=['Survived']),df['Survived'],test_size=0.2)
+transformer
+transformer.fit_transform(X_train)
+transformer.fit_transform(X_train).shape
+transformer.fit_transform(X_test).shape
+ import pandas as pd
+ import numpy as np
+ from sklearn.model_selection import train_test_split
+ from sklearn.preprocessing import OrdinalEncoder,OneHotEncoder,StandardScaler
+ from sklearn.impute import SimpleImputer
+ from sklearn.compose import ColumnTransformer
+ from sklearn.pipeline import Pipeline
+
+df=pd.read_csv('/content/sample_data/titanic_train.csv')
+df.head()
+df.describe()
+df['Age'].mean()
+df['Age'].max()
+df.isnull().sum()
+df1=df.drop(columns=['Name','Ticket','PassengerId'],axis=0)
+
+X_train,X_test,Y_train,Y_test=train_test_split(df.drop(columns=['Survived']),df['Survived'],test_size=0.2)
+num_cols=['Age','SibSp','Parch','Fare']
+ord_cols=['Pclass']
+ord_categories=[[1,2,3]]
+nom_cols=['Sex','Embarked']
+num_Pipeline=Pipeline(steps=[
+    ('imputer',SimpleImputer(strategy='median')),
+    ('scalar',StandardScaler())
+])
+
+ord_Pipeline=Pipeline(steps=[
+    ('imputer',SimpleImputer(strategy='most_frequent')),
+    ('Ordinal',OrdinalEncoder(categories=ord_categories))
+])
+nom_Pipeline=Pipeline(steps=[
+    ('imputer',SimpleImputer(strategy='most_frequent')),
+    ('OneHotEncoder',OneHotEncoder(handle_unknown='ignore'))
+])
+transformer=ColumnTransformer(
+    transformers=[
+        ('num',num_Pipeline,num_cols),
+        ('ord',ord_Pipeline,ord_cols),
+        ('nom',nom_Pipeline,nom_cols)
+
+        ]
+)
+transformer
+transformer.fit_transform(X_train)
+transformer.fit_transform(X_train).shape
+df.shape
+df1.shape
+print("dataset shape is: ",df.shape)
+print("dataset after drop columns: ",df1.shape)
+print("after preprocessing or transform",transformer.fit_transform(X_train).shape)
+print("test data shape is: ", transformer.fit_transform(X_test).shape)
+
 
 
 
